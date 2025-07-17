@@ -1,13 +1,10 @@
-<script setup lang="ts">
-import './assets/main.css'
-import './assets/output.css'
-</script>
-
 <template lang="pug">
 div.min-h-screen.w-full
   router-view
 </template>
 <script lang="ts">
+import './assets/main.css'
+import './assets/output.css'
 import {useAuthStore} from "@/stores/auth.js";
 
 export default {
