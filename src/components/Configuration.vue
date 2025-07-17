@@ -35,7 +35,7 @@ div(v-else)
                       span {{ config.name }}
             Button(variant="outline" size="sm" @click="onRefresh")
               RefreshCw.h-4.w-4(:class="{ 'animate-spin': isRefreshing }")
-          div.mt-4.p-4.bg-gray-50.rounded-lg
+          div.mt-4.p-4.rounded-lg.bg-background.text-foreground(:class="'dark:bg-[hsl(var(--card))] dark:text-[hsl(var(--foreground))]'")
             div.flex.items-center.justify-between.mb-2
               h4.font-medium {{ currentConfigComputed && currentConfigComputed.name }}
               Badge(:variant="currentConfigComputed && currentConfigComputed.status === 'active' ? 'default' : 'secondary'")
@@ -62,10 +62,20 @@ div
         CardTitle Вход в систему
         button(class="text-gray-400 hover:text-gray-700 text-xl" @click="showLoginModal = false") ×
       CardContent
-        form.flex.flex-col.gap-4(@submit.prevent="onLogin")
-          input(type="email" v-model="loginEmail" placeholder="Email" required class="input input-bordered w-full px-3 py-2 border rounded")
-          input(type="password" v-model="loginPassword" placeholder="Пароль" required class="input input-bordered w-full px-3 py-2 border rounded")
-          Button(type="submit" class="btn btn-primary w-full mt-2") Войти
+        form.flex.flex-col.gap-5(@submit.prevent="onLogin")
+          div.flex.flex-col.gap-2
+            label(for="loginEmail" class="text-xs font-semibold text-gray-700 dark:text-gray-300") Email
+            div.relative
+              input#loginEmail(type="email" v-model="loginEmail" placeholder="Email" required
+                class="w-full px-4 py-2 rounded border bg-background text-foreground dark:bg-[hsl(var(--input))] dark:text-[hsl(var(--foreground))] focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition"
+                autocomplete="username")
+          div.flex.flex-col.gap-2
+            label(for="loginPassword" class="text-xs font-semibold text-gray-700 dark:text-gray-300") Пароль
+            div.relative
+              input#loginPassword(type="password" v-model="loginPassword" placeholder="Пароль" required
+                class="w-full px-4 py-2 rounded border bg-background text-foreground dark:bg-[hsl(var(--input))] dark:text-[hsl(var(--foreground))] focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition"
+                autocomplete="current-password")
+          Button(type="submit" class="w-full mt-4 py-2 rounded bg-green-500 hover:bg-green-600 text-white font-semibold shadow-sm transition-colors text-base focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2") Войти
           // Сообщение о статусе
           div.status-badge.flex.items-center.justify-center.mt-4.gap-2(v-if="loginMessage" :class="loginStatus === 'error' ? 'status-badge--error' : 'status-badge--success'")
             span.flex.items-center
@@ -97,7 +107,7 @@ import {
   SelectValue
 } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
-import { RefreshCw, Server, Globe, BadgeCheck, TriangleAlert } from "lucide-vue-next"
+import { RefreshCw, Server, Globe, BadgeCheck, TriangleAlert, User, Lock } from "lucide-vue-next"
 import { Badge } from "@/components/ui/badge"
 import {Config, useAuthStore} from "@/stores/auth.ts";
 import { computed } from 'vue';
@@ -123,7 +133,9 @@ export default {
     Globe,
     Badge,
     BadgeCheck,
-    TriangleAlert
+    TriangleAlert,
+    User,
+    Lock
   },
   props: {
     showConfigPanel: Boolean
@@ -143,7 +155,7 @@ export default {
   },
   computed: {
     currentConfigComputed() {
-      return this.authStore.getConfigs().find(cfg => cfg.id === this.authStore.currentConfig.id)
+      return this.authStore.getConfigs().find(cfg => cfg.id === this.authStore.currentConfig?.id)
     }
   },
   methods: {
@@ -184,7 +196,7 @@ export default {
         login: this.loginEmail,
         password: this.loginPassword,
         type: 'e-mail'
-      }, this.authStore.currentConfig.id);
+      }, this.authStore.currentConfig?.id || '');
       console.log(result)
       if (result && result.status === 'error') {
         this.loginStatus = 'error';
