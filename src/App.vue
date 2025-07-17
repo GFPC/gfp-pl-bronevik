@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import './assets/main.css'
 import './assets/output.css'
-import Header from "@/components/Header.vue";
 </script>
 
 <template lang="pug">
@@ -18,8 +17,8 @@ export default {
       authStore: useAuthStore()
     }
   },
-  async mounted() {
-    await this.authStore.init()
+  mounted() {
+    this.authStore.init()
   }
 }
 </script>
