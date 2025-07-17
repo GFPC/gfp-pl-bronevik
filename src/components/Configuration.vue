@@ -22,11 +22,11 @@ div(v-else)
         CardContent
           div.flex.items-center.gap-4
             div.flex-1
-              Select(:modelValue="authStore.currentConfig" @update:modelValue="setCurrentConfig" v-bind="currentConfig")
+              Select(v-if="currentConfigComputed" :modelValue="currentConfigComputed" @update:modelValue="setCurrentConfig" v-bind="currentConfigComputed")
                 SelectTrigger.w-full
                   div.flex.items-center.gap-2
-                    div.w-2.h-2.rounded-full(:class="getStatusColor(authStore.currentConfig.status)")
-                    span {{ authStore.currentConfig.name }}
+                    div.w-2.h-2.rounded-full(:class="currentConfigComputed ? getStatusColor(currentConfigComputed.status) : ''")
+                    span {{ currentConfigComputed && currentConfigComputed.name }}
 
                 SelectContent
                   SelectItem(v-for="config in authStore.getConfigs()" :key="config.id" :value="config")
@@ -37,22 +37,22 @@ div(v-else)
               RefreshCw.h-4.w-4(:class="{ 'animate-spin': isRefreshing }")
           div.mt-4.p-4.bg-gray-50.rounded-lg
             div.flex.items-center.justify-between.mb-2
-              h4.font-medium {{ authStore.currentConfig.name }}
-              Badge(:variant="authStore.currentConfig.status === 'active' ? 'default' : 'secondary'")
-                | {{getStatusText(authStore.currentConfig.status)}}
+              h4.font-medium {{ currentConfigComputed && currentConfigComputed.name }}
+              Badge(:variant="currentConfigComputed && currentConfigComputed.status === 'active' ? 'default' : 'secondary'")
+                | {{currentConfigComputed && getStatusText(currentConfigComputed.status)}}
             div.flex.items-center.gap-2.text-sm.text-gray-600
               Globe.h-4.w-4
-              span {{authStore.currentConfig.url}}
-            p.text-sm.text-gray-500.mt-1 {{ authStore.currentConfig.description }}
+              span {{currentConfigComputed && currentConfigComputed.url}}
+            p.text-sm.text-gray-500.mt-1(:class="'dark:text-[hsl(var(--muted-foreground))]'") {{ currentConfigComputed && currentConfigComputed.description }}
             div.authed.mt-2
               Badge.px-4.h-8.text-base(
-                :variant="authStore.currentConfig.isAuthed ? 'secondary' : 'destructive'"
-                :class="authStore.currentConfig.isAuthed ? 'text-green-600 bg-green-50 border-green-400' : 'text-red-600 bg-red-50 border-red-400'"
+                :variant="currentConfigComputed && currentConfigComputed.isAuthed ? 'secondary' : 'destructive'"
+                :class="currentConfigComputed && currentConfigComputed.isAuthed ? 'text-green-600 bg-green-50 border-green-400' : 'text-red-600 bg-red-50 border-red-400'"
               )
-                | {{authStore.currentConfig.isAuthed ? 'Авторизован' : 'Не авторизован'}}
-                BadgeCheck.h-4.w-4(v-if="authStore.currentConfig.isAuthed")
+                | {{currentConfigComputed && currentConfigComputed.isAuthed ? 'Авторизован' : 'Не авторизован'}}
+                BadgeCheck.h-4.w-4(v-if="currentConfigComputed && currentConfigComputed.isAuthed")
                 TriangleAlert.h-4.w-4(v-else)
-            Button.mt-6(variant="outline" size="sm" @click="showLoginModal = true" class="bg-green-400 hover:active:bg-primary-100" v-if="!authStore.currentConfig.isAuthed")
+            Button.mt-6(variant="outline" size="sm" @click="showLoginModal = true" class="bg-green-400 hover:active:bg-primary-100" v-if="currentConfigComputed && !currentConfigComputed.isAuthed")
               | Войти
 div
   // Модальное окно входа
@@ -139,6 +139,11 @@ export default {
       loginStatus: '',
       loginMessage: '',
       isRefreshing: false
+    }
+  },
+  computed: {
+    currentConfigComputed() {
+      return this.authStore.getConfigs().find(cfg => cfg.id === this.authStore.currentConfig.id)
     }
   },
   methods: {
