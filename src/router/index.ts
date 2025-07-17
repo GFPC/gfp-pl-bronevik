@@ -2,21 +2,22 @@ import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 import LoginView from "../views/LoginView.vue";
 import RegisterView from "../views/RegisterView.vue";
 import DashboardView from "../views/DashboardView.vue";
+
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/login',
     name: 'Login',
-    component: () => LoginView,
+    component: LoginView, // <--- просто компонент, без функции
   },
   {
     path: '/register',
     name: 'Register',
-    component: () => RegisterView,
+    component: RegisterView,
   },
   {
     path: '/dashboard',
     name: 'Dashboard',
-    component: () => DashboardView,
+    component: DashboardView,
     meta: { requiresAuth: true },
   },
   {
@@ -30,4 +31,4 @@ const router = createRouter({
   routes,
 })
 
-export default router 
+export default router
