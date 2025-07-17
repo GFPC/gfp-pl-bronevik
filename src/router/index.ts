@@ -22,7 +22,7 @@ const routes: Array<RouteRecordRaw> = [
   },
   {
     path: '/',
-    redirect: '/login',
+    redirect: '/dashboard',
   },
 ]
 
